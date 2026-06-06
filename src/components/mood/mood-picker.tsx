@@ -1,6 +1,6 @@
 'use client'
 
-import { cn, getMoodEmoji } from '@/lib/utils'
+import { cn, getMoodEmoji, getMoodLabel } from '@/lib/utils'
 
 type MoodPickerProps = {
   value: number
@@ -11,11 +11,18 @@ const moodScores = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 export function MoodPicker({ value, onChange }: MoodPickerProps) {
   return (
-    <div className="grid grid-cols-5 gap-3">
+    <div
+      className="grid grid-cols-5 gap-3"
+      role="radiogroup"
+      aria-label="Select your mood score"
+    >
       {moodScores.map((score) => (
         <button
           key={score}
           type="button"
+          role="radio"
+          aria-checked={value === score}
+          aria-label={`Mood ${score}, ${getMoodLabel(score)}`}
           onClick={() => onChange(score)}
           className={cn(
             'flex flex-col items-center gap-1 rounded-2xl border p-3 transition-all',

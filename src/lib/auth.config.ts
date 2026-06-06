@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from 'next-auth'
 import Google from 'next-auth/providers/google'
 import { authEnv } from '@/lib/env.auth'
+import { resolveAuthRouting } from '@/lib/auth-routing'
 
 export const authConfig = {
   providers: [
@@ -15,27 +16,23 @@ export const authConfig = {
   },
   callbacks: {
     authorized({ auth, request }) {
-      const { pathname } = request.nextUrl
-      const publicPaths = ['/', '/login', '/register', '/api/auth', '/offline']
-      const isPublic =
-        pathname === '/' ||
-        publicPaths.some((path) => path !== '/' && pathname.startsWith(path))
+      const decision = resolveAuthRouting(request.nextUrl.pathname, Boolean(auth))
 
-      if (!auth && !isPublic) {
-        if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth')) {
-          return Response.json(
-            { success: false, message: 'Unauthorized' },
-            { status: 401 },
-          )
-        }
-        return false
+      if (decision.type === 'api-unauthorized') {
+        return Response.json(
+          { success: false, message: 'Unauthorized' },
+          { status: 401 },
+        )
       }
-      if (auth && pathname === '/') {
-        return Response.redirect(new URL('/dashboard', request.nextUrl.origin))
+
+      if (decision.type === 'login-required') return false
+
+      if (decision.type === 'redirect') {
+        return Response.redirect(
+          new URL(decision.destination, request.nextUrl.origin),
+        )
       }
-      if (auth && (pathname === '/login' || pathname === '/register')) {
-        return Response.redirect(new URL('/dashboard', request.nextUrl.origin))
-      }
+
       return true
     },
     async session({ session, token }) {

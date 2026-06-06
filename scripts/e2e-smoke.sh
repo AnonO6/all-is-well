@@ -37,6 +37,13 @@ require_body_not_contains() {
   fi
 }
 
+echo "==> Checking login page is public"
+LOGIN_PAGE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/login")
+if [ "$LOGIN_PAGE_STATUS" != "200" ]; then
+  echo "Login page failed with status $LOGIN_PAGE_STATUS"
+  exit 1
+fi
+
 echo "==> Checking public landing page"
 LANDING_BODY=$(curl -s "$BASE_URL/")
 LANDING_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/")
@@ -89,6 +96,15 @@ CHECKIN_RESPONSE=$(curl -s -b "$COOKIE_JAR" -X POST "$BASE_URL/api/check-ins" \
   -H "Content-Type: application/json" \
   -d '{"moodScore":7,"energyLevel":6,"positiveHighlights":["study_win"],"note":"E2E smoke test"}')
 require_json_success "Check-in" "$CHECKIN_RESPONSE"
+
+echo "==> Rejecting invalid journal payload"
+INVALID_JOURNAL=$(curl -s -b "$COOKIE_JAR" -X POST "$BASE_URL/api/journal" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"","response":""}')
+if echo "$INVALID_JOURNAL" | grep -q '"success":true'; then
+  echo "Invalid journal payload should be rejected"
+  exit 1
+fi
 
 echo "==> Rejecting legacy stress payload"
 LEGACY_CHECKIN=$(curl -s -b "$COOKIE_JAR" -X POST "$BASE_URL/api/check-ins" \

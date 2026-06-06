@@ -1,39 +1,30 @@
 import { v4 as uuidv4 } from 'uuid'
 import { MoodEntryRepository } from '@/repositories/mood-entry.repository'
 import type { CreateMoodEntryInput } from '@/schemas/mood.schema'
+import { computeInternalStressLevel } from '@/lib/mood-metrics'
 import { getMoodLabel } from '@/lib/utils'
-import { db } from '@/lib/database'
-
-function internalStressLevel(moodScore: number, energyLevel: number): number {
-  const raw = 11 - moodScore * 0.6 - energyLevel * 0.4
-  return Math.min(10, Math.max(1, Math.round(raw)))
-}
 
 export class MoodService {
   static async createEntry(userId: string, input: CreateMoodEntryInput) {
     const entryId = uuidv4()
     const moodLabel = getMoodLabel(input.moodScore)
-    const stressLevel = internalStressLevel(input.moodScore, input.energyLevel)
+    const stressLevel = computeInternalStressLevel(input.moodScore, input.energyLevel)
 
-    await db
-      .insertInto('mood_entries')
-      .values({
-        id: entryId,
-        user_id: userId,
-        mood_score: input.moodScore,
-        energy_level: input.energyLevel,
-        stress_level: stressLevel,
-        mood_label: moodLabel,
-        positive_highlights:
-          input.positiveHighlights.length > 0
-            ? JSON.stringify(input.positiveHighlights)
-            : null,
-        note: input.note ?? null,
-        created_at: new Date(),
-      })
-      .execute()
+    const entry = await MoodEntryRepository.insert({
+      id: entryId,
+      user_id: userId,
+      mood_score: input.moodScore,
+      energy_level: input.energyLevel,
+      stress_level: stressLevel,
+      mood_label: moodLabel,
+      positive_highlights:
+        input.positiveHighlights.length > 0
+          ? JSON.stringify(input.positiveHighlights)
+          : null,
+      note: input.note ?? null,
+      created_at: new Date(),
+    })
 
-    const entry = await MoodEntryRepository.findById(entryId)
     return { success: true as const, data: entry }
   }
 

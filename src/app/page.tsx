@@ -41,7 +41,16 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto flex min-h-screen max-w-lg flex-col px-6 py-10">
+      <a
+        href="#landing-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow-lg"
+      >
+        Skip to main content
+      </a>
+      <div
+        id="landing-content"
+        className="mx-auto flex min-h-screen max-w-lg flex-col px-6 py-10"
+      >
         <header className="mb-10 text-center">
           <p className="text-sm font-medium uppercase tracking-widest text-brand-purple">
             All Is Well

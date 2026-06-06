@@ -1,4 +1,5 @@
 import { env } from '@/lib/env'
+import { pickApiKey } from '@/lib/youtube-keys'
 
 type YouTubeVideo = {
   id: string
@@ -19,16 +20,6 @@ function getYouTubeKeys() {
   )
 }
 
-function pickApiKey(seed: string) {
-  const keys = getYouTubeKeys()
-  if (keys.length === 0) return null
-  let hash = 0
-  for (const char of seed) {
-    hash = (hash + char.charCodeAt(0)) % keys.length
-  }
-  return keys[hash] ?? keys[0]
-}
-
 export async function searchWellnessVideos(category: 'meditation' | 'music' = 'meditation') {
   const query =
     category === 'music'
@@ -36,7 +27,7 @@ export async function searchWellnessVideos(category: 'meditation' | 'music' = 'm
       : MEDITATION_QUERIES[Math.floor(Math.random() * MEDITATION_QUERIES.length)]
 
   const dayBucket = new Date().toISOString().slice(0, 10)
-  const apiKey = pickApiKey(`${category}:${dayBucket}`)
+  const apiKey = pickApiKey(getYouTubeKeys(), `${category}:${dayBucket}`)
   if (!apiKey) return []
 
   const params = new URLSearchParams({

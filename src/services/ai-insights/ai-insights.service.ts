@@ -2,18 +2,9 @@ import { unstable_cache } from 'next/cache'
 import { MoodEntryRepository } from '@/repositories/mood-entry.repository'
 import { UserRepository } from '@/repositories/user.repository'
 import { openai, OPENAI_MODEL } from '@/lib/openai'
+import { parsePositiveHighlights } from '@/lib/positive-highlights'
 import { POSITIVE_HIGHLIGHT_LABELS } from '@/lib/rancho-copy'
 import type { PositiveHighlightType } from '@/types/database'
-
-function parseHighlights(raw: string | null): PositiveHighlightType[] {
-  if (!raw) return []
-  try {
-    const parsed: unknown = JSON.parse(raw)
-    return Array.isArray(parsed) ? (parsed as PositiveHighlightType[]) : []
-  } catch {
-    return []
-  }
-}
 
 async function generateSummary(
   moodSummary: string,
@@ -50,7 +41,7 @@ export class AiInsightsService {
 
     const highlightCounts = new Map<PositiveHighlightType, number>()
     for (const entry of moodEntries) {
-      for (const highlight of parseHighlights(entry.positive_highlights)) {
+      for (const highlight of parsePositiveHighlights(entry.positive_highlights)) {
         highlightCounts.set(highlight, (highlightCounts.get(highlight) ?? 0) + 1)
       }
     }

@@ -23,7 +23,10 @@ export function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-full border border-white/70 bg-white/90 px-2 py-2 shadow-lg backdrop-blur-md">
+    <nav
+      className="fixed bottom-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-full border border-white/70 bg-white/90 px-2 py-2 shadow-lg backdrop-blur-md"
+      aria-label="Main navigation"
+    >
       <ul className="flex items-center justify-between">
         {navItems.map((item) => {
           const isActive = pathname === item.href
@@ -32,6 +35,7 @@ export function BottomNav() {
             <li key={item.href}>
               <Link
                 href={item.href}
+                aria-current={isActive ? 'page' : undefined}
                 className={cn(
                   'flex flex-col items-center gap-0.5 rounded-full px-3 py-2 text-[10px] font-medium transition-colors',
                   isActive

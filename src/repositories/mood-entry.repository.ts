@@ -1,4 +1,5 @@
 import { db } from '@/lib/database'
+import { computeCheckInStreak } from '@/lib/streak'
 import type { DB } from '@/types/database'
 import type { Insertable, Selectable } from 'kysely'
 
@@ -62,30 +63,6 @@ export class MoodEntryRepository {
       .limit(60)
       .execute()
 
-    if (entries.length === 0) return 0
-
-    let streak = 0
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-
-    const entryDates = new Set(
-      entries.map((e) => {
-        const d = new Date(e.created_at)
-        d.setHours(0, 0, 0, 0)
-        return d.getTime()
-      }),
-    )
-
-    const checkDate = new Date(today)
-    if (!entryDates.has(checkDate.getTime())) {
-      checkDate.setDate(checkDate.getDate() - 1)
-    }
-
-    while (entryDates.has(checkDate.getTime())) {
-      streak += 1
-      checkDate.setDate(checkDate.getDate() - 1)
-    }
-
-    return streak
+    return computeCheckInStreak(entries.map((entry) => entry.created_at))
   }
 }
