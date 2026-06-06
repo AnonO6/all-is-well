@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "migrate": "tsx scripts/migrate.ts",
+    "test": "tsx --test src/**/*.test.ts",
     "test:e2e": "bash scripts/e2e-smoke.sh"
   },
   "dependencies": {

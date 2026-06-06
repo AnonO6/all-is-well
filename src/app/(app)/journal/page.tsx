@@ -6,7 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { MoodPicker } from '@/components/mood/mood-picker'
 import { formatDate, getMoodEmoji } from '@/lib/utils'
+import { PAGE_COPY } from '@/lib/rancho-copy'
 import { Loader2 } from 'lucide-react'
+
+const copy = PAGE_COPY.journal
 
 type JournalEntry = {
   id: string
@@ -77,34 +80,32 @@ export default function JournalPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">Reflection Journal</h1>
-        <p className="text-sm text-brand-text/60">
-          A safe space to process how exam season feels
-        </p>
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <p className="text-sm text-brand-text/60">{copy.subtitle}</p>
       </header>
 
       <Card>
         <CardHeader>
-          <CardTitle>Today&apos;s prompt</CardTitle>
+          <CardTitle>Rancho ka sawaal</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {loadingPrompt ? (
             <div className="flex items-center gap-2 text-brand-text/50">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Crafting your prompt...
+              {copy.promptLoading}
             </div>
           ) : (
             <p className="text-brand-text italic">&ldquo;{prompt}&rdquo;</p>
           )}
           <Button variant="outline" size="sm" onClick={generatePrompt}>
-            New prompt
+            {copy.newPrompt}
           </Button>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>How do you feel before writing?</CardTitle>
+          <CardTitle>{copy.moodBefore}</CardTitle>
         </CardHeader>
         <CardContent>
           <MoodPicker value={moodBefore} onChange={setMoodBefore} />
@@ -113,11 +114,11 @@ export default function JournalPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Your reflection</CardTitle>
+          <CardTitle>{copy.reflection}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Textarea
-            placeholder="Write freely — no one is grading this..."
+            placeholder={copy.reflectionPlaceholder}
             value={response}
             onChange={(e) => setResponse(e.target.value)}
           />
@@ -126,17 +127,17 @@ export default function JournalPage() {
               onClick={() => setShowMoodAfter(true)}
               disabled={!response.trim()}
             >
-              Save & check mood after
+              {copy.saveMood}
             </Button>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm font-medium">How do you feel now?</p>
+              <p className="text-sm font-medium">{copy.moodAfter}</p>
               <MoodPicker
                 value={moodAfter ?? 5}
                 onChange={(v) => setMoodAfter(v)}
               />
               <Button onClick={saveEntry} disabled={saving}>
-                {saving ? 'Saving...' : 'Save entry'}
+                {saving ? copy.saving : copy.save}
               </Button>
             </div>
           )}
@@ -145,7 +146,7 @@ export default function JournalPage() {
 
       {entries.length > 0 && (
         <section>
-          <h2 className="mb-3 text-lg font-semibold">Past reflections</h2>
+          <h2 className="mb-3 text-lg font-semibold">{copy.past}</h2>
           <div className="space-y-3">
             {entries.map((entry) => (
               <Card key={entry.id}>

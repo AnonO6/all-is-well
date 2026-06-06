@@ -20,7 +20,7 @@ const PATTERNS: Pattern[] = [
     hold: 4,
     exhale: 4,
     pause: 4,
-    description: 'Equal counts to steady your nerves before an exam.',
+    description: 'Exam se pehle pressure cooker ko thanda kar.',
   },
   {
     name: '4-7-8 Relax',
@@ -28,7 +28,7 @@ const PATTERNS: Pattern[] = [
     hold: 7,
     exhale: 8,
     pause: 0,
-    description: 'Slow exhale to calm racing thoughts.',
+    description: 'Slow exhale — dimaag ka traffic kam kar.',
   },
 ]
 

@@ -17,7 +17,7 @@ export function MoodSparkline({ data }: MoodSparklineProps) {
   if (data.length === 0) {
     return (
       <div className="flex h-40 items-center justify-center rounded-2xl bg-brand-purple/5 text-sm text-brand-text/50">
-        Check in daily to see your mood trend
+        Roz check-in kar — dil ka graph banega
       </div>
     )
   }

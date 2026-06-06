@@ -12,7 +12,7 @@ const geistSans = localFont({
 export const metadata: Metadata = {
   title: 'All Is Well — Mental Wellness Tracker',
   description:
-    'Track your mood, reflect on stress, and find calm during exam season.',
+    'All is well, buddy. Track mood wins, talk to Rancho, and breathe through exam season. Stress signals stay private in the backend.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

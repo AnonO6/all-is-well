@@ -14,18 +14,21 @@ import {
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Shield } from 'lucide-react'
+import { PAGE_COPY } from '@/lib/rancho-copy'
+
+const copy = PAGE_COPY.insights
 
 type InsightsData = {
   days: number
   moodEntries: Array<{
     date: string
     moodScore: number
-    stressLevel: number
+    energyLevel: number
   }>
-  triggerBreakdown: Array<{ type: string; label: string; count: number }>
+  positiveBreakdown: Array<{ type: string; label: string; count: number }>
   averageMood: number | null
-  averageStress: number | null
+  averageEnergy: number | null
   summary: string | null
   examType: string
 }
@@ -56,11 +59,16 @@ export default function InsightsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">Your Insights</h1>
-        <p className="text-sm text-brand-text/60">
-          Patterns in your wellness journey
-        </p>
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <p className="text-sm text-brand-text/60">{copy.subtitle}</p>
       </header>
+
+      <Card className="border-brand-teal/20 bg-brand-teal/5">
+        <CardContent className="flex gap-3 p-4">
+          <Shield className="mt-0.5 h-4 w-4 shrink-0 text-brand-teal" />
+          <p className="text-xs leading-relaxed text-brand-text/70">{copy.privacyNote}</p>
+        </CardContent>
+      </Card>
 
       <Tabs
         value={String(days)}
@@ -82,22 +90,22 @@ export default function InsightsPage() {
                 <p className="text-3xl font-bold text-brand-orange">
                   {insights?.averageMood?.toFixed(1) ?? '—'}
                 </p>
-                <p className="text-xs text-brand-text/60">Avg mood</p>
+                <p className="text-xs text-brand-text/60">{copy.avgMood}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
-                <p className="text-3xl font-bold text-brand-purple">
-                  {insights?.averageStress?.toFixed(1) ?? '—'}
+                <p className="text-3xl font-bold text-brand-teal">
+                  {insights?.averageEnergy?.toFixed(1) ?? '—'}
                 </p>
-                <p className="text-xs text-brand-text/60">Avg stress</p>
+                <p className="text-xs text-brand-text/60">{copy.avgEnergy}</p>
               </CardContent>
             </Card>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle>Mood trend</CardTitle>
+              <CardTitle>{copy.moodTrend}</CardTitle>
             </CardHeader>
             <CardContent className="h-56">
               {insights?.moodEntries.length ? (
@@ -116,29 +124,29 @@ export default function InsightsPage() {
                     />
                     <Line
                       type="monotone"
-                      dataKey="stressLevel"
-                      stroke="#7C6FCD"
+                      dataKey="energyLevel"
+                      stroke="#4ECDC4"
                       strokeWidth={2}
-                      name="Stress"
+                      name="Energy"
                     />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
                 <p className="text-center text-sm text-brand-text/50">
-                  No data yet — start with a check-in!
+                  {copy.empty}
                 </p>
               )}
             </CardContent>
           </Card>
 
-          {insights?.triggerBreakdown.length ? (
+          {insights?.positiveBreakdown.length ? (
             <Card>
               <CardHeader>
-                <CardTitle>Stress triggers</CardTitle>
+                <CardTitle>{copy.wins}</CardTitle>
               </CardHeader>
               <CardContent className="h-48">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={insights.triggerBreakdown} layout="vertical">
+                  <BarChart data={insights.positiveBreakdown} layout="vertical">
                     <XAxis type="number" tick={{ fontSize: 10 }} />
                     <YAxis
                       type="category"
@@ -147,7 +155,7 @@ export default function InsightsPage() {
                       tick={{ fontSize: 10 }}
                     />
                     <Tooltip />
-                    <Bar dataKey="count" fill="#7C6FCD" radius={[0, 8, 8, 0]} />
+                    <Bar dataKey="count" fill="#FF8C42" radius={[0, 8, 8, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -157,7 +165,7 @@ export default function InsightsPage() {
           {insights?.summary && (
             <Card className="border-brand-teal/20 bg-brand-teal/5">
               <CardHeader>
-                <CardTitle>AI wellness summary</CardTitle>
+                <CardTitle>{copy.aiSummary}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm leading-relaxed text-brand-text">

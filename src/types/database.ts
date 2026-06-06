@@ -17,6 +17,16 @@ export type TriggerType =
   | 'uncertainty'
   | 'other'
 
+export type PositiveHighlightType =
+  | 'good_sleep'
+  | 'study_win'
+  | 'took_break'
+  | 'talked_friend'
+  | 'went_outside'
+  | 'ate_well'
+  | 'family_time'
+  | 'other_win'
+
 export interface DB {
   users: {
     id: string
@@ -35,7 +45,16 @@ export interface DB {
     energy_level: number
     stress_level: number
     mood_label: string
+    positive_highlights: string | null
     note: string | null
+    created_at: Date
+  }
+  emotion_snapshots: {
+    id: string
+    user_id: string
+    source: string
+    emotions: string
+    stress_signal: number
     created_at: Date
   }
   stress_triggers: {

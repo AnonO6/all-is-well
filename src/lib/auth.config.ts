@@ -16,12 +16,17 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request }) {
       const { pathname } = request.nextUrl
-      const publicPaths = ['/login', '/register', '/api/auth', '/offline']
-      const isPublic = publicPaths.some((path) => pathname.startsWith(path))
+      const publicPaths = ['/', '/login', '/register', '/api/auth', '/offline']
+      const isPublic =
+        pathname === '/' ||
+        publicPaths.some((path) => path !== '/' && pathname.startsWith(path))
 
       if (!auth && !isPublic) return false
+      if (auth && pathname === '/') {
+        return Response.redirect(new URL('/dashboard', request.nextUrl.origin))
+      }
       if (auth && (pathname === '/login' || pathname === '/register')) {
-        return Response.redirect(new URL('/', request.nextUrl.origin))
+        return Response.redirect(new URL('/dashboard', request.nextUrl.origin))
       }
       return true
     },

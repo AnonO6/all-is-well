@@ -5,6 +5,9 @@ import Image from 'next/image'
 import { BreathingExercise } from '@/components/breathe/breathing-exercise'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PAGE_COPY } from '@/lib/rancho-copy'
+
+const copy = PAGE_COPY.breathe
 
 type Video = {
   id: string
@@ -14,12 +17,12 @@ type Video = {
 }
 
 const BODY_SCAN = [
-  'Relax your forehead and jaw',
-  'Drop your shoulders away from your ears',
-  'Unclench your hands',
-  'Soften your belly — breathe naturally',
-  'Feel your feet grounded on the floor',
-  'Notice one thing you are grateful for today',
+  'Forehead aur jaw chill karo — Virus face nahi',
+  'Shoulders neech lao — rank unpe nahi tikti',
+  'Haath dheela chhodo — pen pakadna band nahi',
+  'Pet soft — saans natural, machine mode off',
+  'Paire zameen pe — tu gira nahi, bas thaka hai',
+  'Ek cheez jisme shukr hai — chhoti bhi chalegi',
 ]
 
 export default function BreathePage() {
@@ -39,17 +42,15 @@ export default function BreathePage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">Breathe & Relax</h1>
-        <p className="text-sm text-brand-text/60">
-          Calm your nervous system — works offline too
-        </p>
+        <h1 className="text-2xl font-bold">{copy.title}</h1>
+        <p className="text-sm text-brand-text/60">{copy.subtitle}</p>
       </header>
 
       <BreathingExercise />
 
       <Card>
         <CardContent className="p-5">
-          <h3 className="mb-3 font-semibold">Body scan checklist</h3>
+          <h3 className="mb-3 font-semibold">{copy.bodyScan}</h3>
           <ul className="space-y-2">
             {BODY_SCAN.map((item) => (
               <li key={item} className="flex items-start gap-2 text-sm text-brand-text/80">

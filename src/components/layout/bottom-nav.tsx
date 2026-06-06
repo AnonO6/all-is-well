@@ -12,11 +12,11 @@ import {
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/journal', label: 'Journal', icon: BookOpen },
-  { href: '/insights', label: 'Insights', icon: BarChart3 },
-  { href: '/breathe', label: 'Breathe', icon: Wind },
-  { href: '/guru', label: 'Guru', icon: MessageCircle },
+  { href: '/dashboard', label: 'Home', icon: Home },
+  { href: '/journal', label: 'Likho', icon: BookOpen },
+  { href: '/insights', label: 'Report', icon: BarChart3 },
+  { href: '/breathe', label: 'Saans', icon: Wind },
+  { href: '/rancho', label: 'Rancho', icon: MessageCircle },
 ]
 
 export function BottomNav() {

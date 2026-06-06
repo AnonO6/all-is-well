@@ -1,19 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { VoiceProvider, useVoice } from '@humeai/voice-react'
 import { Mic, MicOff, PhoneOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { extractProsodyScores } from '@/lib/hume-emotions'
 
 function VoiceControls() {
   const { connect, disconnect, status, messages } = useVoice()
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const postedSnapshots = useRef(new Set<string>())
   const configId = process.env.NEXT_PUBLIC_HUME_CONFIG_ID
 
   const isConnected = status.value === 'connected'
   const isConnecting = status.value === 'connecting'
+
+  useEffect(() => {
+    for (const message of messages) {
+      if (message.type !== 'user_message') continue
+
+      const snapshotKey = `${message.receivedAt.getTime()}`
+      if (postedSnapshots.current.has(snapshotKey)) continue
+
+      const emotions = extractProsodyScores(message)
+      if (!emotions) continue
+
+      postedSnapshots.current.add(snapshotKey)
+      void fetch('/api/emotion-snapshots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ source: 'rancho', emotions }),
+      })
+    }
+  }, [messages])
 
   const handleStart = async () => {
     setError(null)
@@ -34,7 +55,7 @@ function VoiceControls() {
         configId,
       })
     } catch {
-      setError('Failed to connect to Guru. Please try again.')
+      setError('Failed to connect to Rancho. Please try again.')
     }
   }
 
@@ -50,9 +71,11 @@ function VoiceControls() {
             />
           </div>
           <div className="absolute bottom-4 left-0 right-0 text-center">
-            <p className="text-lg font-semibold text-brand-text">Talk to Guru</p>
+            <p className="text-lg font-semibold text-brand-text">Talk to Rancho</p>
             <p className="text-sm text-brand-text/60">
-              {isConnected ? 'Listening with care...' : 'Your calm exam wellness mentor'}
+              {isConnected
+                ? 'Sun raha hoon... dil bhi, awaaz bhi'
+                : 'All is well, buddy? Bol — Rancho sun raha hai'}
             </p>
           </div>
         </div>
@@ -81,9 +104,13 @@ function VoiceControls() {
           {error && <p className="text-center text-sm text-red-500">{error}</p>}
           {!configId && !error && (
             <p className="text-center text-sm text-brand-text/50">
-              Voice mentor needs Hume config. Add keys to .env to enable.
+              Talk to Rancho needs a Hume EVI config. Add keys to .env to enable.
             </p>
           )}
+          <p className="max-w-xs text-center text-xs text-brand-text/50">
+            Hume reads voice emotions in the background for care — you only see
+            positive vibes here, never stress scores.
+          </p>
         </CardContent>
       </Card>
 
@@ -117,7 +144,7 @@ function VoiceControls() {
                     }`}
                   >
                     <span className="font-medium capitalize">
-                      {message.type === 'user_message' ? 'You' : 'Guru'}:
+                      {message.type === 'user_message' ? 'You' : 'Rancho'}:
                     </span>{' '}
                     {content}
                   </div>

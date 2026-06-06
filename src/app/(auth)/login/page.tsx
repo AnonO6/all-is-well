@@ -18,7 +18,7 @@ function LoginForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/'
+  const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard'
 
   const handleCredentials = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -31,7 +31,7 @@ function LoginForm() {
     })
     setLoading(false)
     if (result?.error) {
-      setError('Invalid email or password')
+      setError('Galat email/password. Virus khush ho gaya. Try again.')
       return
     }
     router.push(callbackUrl)
@@ -46,7 +46,7 @@ function LoginForm() {
           </div>
           <CardTitle className="text-2xl">All Is Well</CardTitle>
           <p className="text-sm text-brand-text/60">
-            Your calm companion through exam season
+            Exam season? All is well, buddy.
           </p>
         </CardHeader>
         <CardContent className="space-y-4">

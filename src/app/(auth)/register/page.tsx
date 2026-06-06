@@ -51,7 +51,7 @@ export default function RegisterPage() {
       router.push('/login')
       return
     }
-    router.push('/')
+    router.push('/dashboard')
   }
 
   return (
@@ -60,7 +60,7 @@ export default function RegisterPage() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Join All Is Well</CardTitle>
           <p className="text-sm text-brand-text/60">
-            Start tracking your wellness during exam prep
+            Chill side join kar. Virus not invited.
           </p>
         </CardHeader>
         <CardContent>

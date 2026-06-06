@@ -2,17 +2,41 @@
 
 <img width="1086" height="1448" alt="All Is Well app preview" src="https://github.com/user-attachments/assets/beb52ee9-a9f8-41b1-9766-8ee7c6a54266" />
 
-**A chill mental wellness companion for Indian exam students** — track mood, reflect on stress, breathe, and talk to **Guru** (your Rancho-from-3-Idiots-style voice mentor). Built as a **Progressive Web App (PWA)** that feels native on iPhone and looks gorgeous in the browser.
+**A chill mental wellness companion for Indian exam students** — track mood, reflect on stress, breathe, and talk to **Rancho** (your funny, Hinglish, 3 Idiots-style mentor). Built as a **Progressive Web App (PWA)** that feels native on iPhone and looks gorgeous in the browser.
 
 **Live app:** https://all-is-well-zeta.vercel.app
+
+---
+
+## Powered by Hume — emotion-aware wellness
+
+**Hume AI is the forefront of All Is Well.** While mood check-ins and journals capture how you *say* you feel, **Talk to Rancho** goes deeper — Hume's **Empathic Voice Interface (EVI)** listens to your actual voice and assesses emotional signals in real time.
+
+### How Hume reads your emotions
+
+| Step | What happens |
+|------|----------------|
+| **You speak** | Your voice streams live through the mic |
+| **Hume analyzes** | EVI detects prosody, tone, and emotional cues — not just words |
+| **Emotion assessment** | Hume infers how you're *really* feeling (stress, sadness, frustration, calm) |
+| **Rancho responds** | A voice reply shaped by both what you said and how you said it |
+| **Transcript** | Conversation logged in the UI so you can reflect afterward |
+
+This is what makes All Is Well different from a regular chatbot: **wellness support that responds to your emotional state, not just your text.**
+
+Hume EVI powers:
+- Real-time voice conversation via WebSocket
+- Emotion-aware responses (the core differentiator)
+- Natural speech synthesis with empathetic tone
+- Server-secured token auth — API secrets never hit the browser
+
+> *"All is well, yaar."* — but now Rancho actually *hears* when it isn't.
 
 ---
 
 ## Why this exists
 
 Students preparing for NEET, JEE, CUET, CAT, GATE, UPSC, and board exams deal with stress, burnout, comparison, and result anxiety. All Is Well is a simple, positive space to check in with yourself — no judgment, no toxic hustle culture.
-
-> *"All is well, yaar."*
 
 ---
 
@@ -52,10 +76,10 @@ Mobile-first UI inspired by modern wellness apps — soft, warm, and easy on the
 |--------|--------|
 | **Palette** | Lavender background (`#F0F4FF`), warm orange CTAs (`#FF8C42`), soft purple accents (`#7C6FCD`), calm teal highlights (`#4ECDC4`) |
 | **Layout** | Rounded cards, generous whitespace, pill-shaped controls |
-| **Navigation** | Floating bottom nav bar (Home, Journal, Insights, Breathe, Guru) |
+| **Navigation** | Floating bottom nav bar (Home, Journal, Insights, Breathe, Rancho) |
 | **Imagery** | Curated Unsplash nature photos keyed to your mood |
 | **Browser** | Responsive max-width layout — looks polished on desktop too, not just a stretched phone view |
-| **Motion** | Breathing circle animations, smooth check-in steps, mood emoji picker |
+| **Motion** | Breathing circle animations, smooth check-in steps, mood emoji picker, live voice waveform pulse |
 
 Open in any modern browser for the full experience. On desktop you get the same beautiful card-based layout centered in the viewport — clean, minimal, and intentionally calm.
 
@@ -65,26 +89,28 @@ Open in any modern browser for the full experience. On desktop you get the same 
 
 | Feature | What it does |
 |---------|----------------|
+| **Talk to Rancho** | **Hume EVI voice mentor** — emotion-assessed, funny, chill, Hinglish Rancho energy |
 | **Daily Check-In** | Mood (1–10), energy & stress sliders, stress trigger chips, optional note |
 | **Dashboard** | Streak counter, weekly mood sparkline, quote of the day, quick actions |
 | **Journal** | AI-generated reflection prompts, before/after mood tracking |
 | **Insights** | 7/30-day mood trends, trigger breakdown, AI weekly summary |
 | **Breathe & Relax** | Box breathing, 4-7-8 technique, body scan, YouTube meditation & lo-fi |
-| **Talk to Guru** | Hume EVI voice mentor — funny, chill, Hinglish Rancho energy |
 
 ---
 
 ## Tech stack
 
-- **Framework:** Next.js 14 (App Router), TypeScript
-- **Database:** MySQL (Aiven) + Kysely
-- **Auth:** NextAuth v5 (Google OAuth + email/password)
-- **AI:** OpenAI `gpt-5-mini` (journal prompts, insights)
-- **Voice:** Hume AI EVI (`@humeai/voice-react`)
-- **Media:** Unsplash + YouTube Data API
-- **UI:** Tailwind CSS, Radix primitives, Recharts
-- **PWA:** `@ducanh2912/next-pwa`
-- **Deploy:** Vercel
+| Layer | Technology |
+|-------|------------|
+| **Emotion AI (hero)** | [Hume AI EVI](https://www.hume.ai/) — `@humeai/voice-react` + `hume` SDK |
+| **Framework** | Next.js 14 (App Router), TypeScript |
+| **Database** | MySQL (Aiven) + Kysely |
+| **Auth** | NextAuth v5 (Google OAuth + email/password) |
+| **Text AI** | OpenAI `gpt-5-mini` (journal prompts, insights) |
+| **Media** | Unsplash + YouTube Data API |
+| **UI** | Tailwind CSS, Radix primitives, Recharts |
+| **PWA** | `@ducanh2912/next-pwa` |
+| **Deploy** | Vercel |
 
 ---
 
@@ -116,6 +142,8 @@ Copy `.env.example` to `.env` and fill in:
 
 | Variable | Purpose |
 |----------|---------|
+| `HUME_API_KEY` / `HUME_SECRET_KEY` | **Hume EVI** — server-side voice token auth |
+| `NEXT_PUBLIC_HUME_CONFIG_ID` | **Hume EVI config** — Rancho persona, voice, emotion model ([app.hume.ai/evi/configs](https://app.hume.ai/evi/configs)) |
 | `DATABASE_URL` | Aiven MySQL connection string |
 | `NEXTAUTH_URL` | App URL (`http://localhost:3000` or production domain) |
 | `NEXTAUTH_SECRET` | Random secret for session signing |
@@ -123,8 +151,6 @@ Copy `.env.example` to `.env` and fill in:
 | `OPENAI_API_KEY_ONE` / `OPENAI_MODEL` | AI journal & insights |
 | `UNSPLASH_API_KEY` | Dashboard wellness imagery |
 | `YOUTUBE_API_KEY_ONE` (+ TWO/THREE) | Meditation & study music videos |
-| `HUME_API_KEY` / `HUME_SECRET_KEY` | Voice mentor auth |
-| `NEXT_PUBLIC_HUME_CONFIG_ID` | Hume EVI config ID (from [app.hume.ai/evi/configs](https://app.hume.ai/evi/configs)) |
 
 ---
 
@@ -155,10 +181,11 @@ https://your-domain.vercel.app/api/auth/callback/google
 
 ```
 src/
-├── app/(app)/          # Main app pages (dashboard, check-in, journal, etc.)
+├── app/(app)/rancho/   # Talk to Rancho — Hume EVI voice page
+├── app/(app)/          # Dashboard, check-in, journal, insights, breathe
 ├── app/(auth)/         # Login & register
-├── app/api/            # REST API routes
-├── components/         # UI, mood picker, guru voice, PWA install prompt
+├── app/api/            # REST API routes (+ /api/hume-token)
+├── components/rancho/  # Hume voice chat UI
 ├── repositories/       # Kysely data access
 ├── services/           # Business logic
 ├── schemas/            # Zod validation
