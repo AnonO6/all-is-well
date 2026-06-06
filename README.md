@@ -1,4 +1,6 @@
 # All Is Well — Mental Wellness Tracker
+<img width="1086" height="1448" alt="ChatGPT Image Jun 6, 2026, 11_54_54 AM" src="https://github.com/user-attachments/assets/beb52ee9-a9f8-41b1-9766-8ee7c6a54266" />
+
 
 A PWA for Indian exam students (NEET, JEE, CUET, CAT, GATE, UPSC, Board exams) to track mood, identify stress triggers, journal reflections, and access wellness support.
 
