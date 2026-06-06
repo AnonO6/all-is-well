@@ -117,8 +117,10 @@ export default async function LandingPage() {
           </CardContent>
         </Card>
 
-        <p className="mt-8 text-center text-xs text-brand-text/40">
-          PWA · Install on iPhone from Safari · All is well, buddy
+        <p className="mt-8 text-center text-xs leading-relaxed text-brand-text/40">
+          PWA — iPhone: Safari → Share → Add to Home Screen.
+          <br />
+          Android: use the Install banner when it appears.
         </p>
       </div>
     </div>

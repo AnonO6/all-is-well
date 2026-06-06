@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 import { AuthSessionProvider } from '@/components/providers/session-provider'
+import { InstallPrompt } from '@/components/pwa/install-prompt'
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -18,6 +19,9 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: 'default',
     title: 'All Is Well',
+  },
+  icons: {
+    apple: '/icons/icon-192.png',
   },
 }
 
@@ -36,7 +40,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} antialiased`}>
-        <AuthSessionProvider>{children}</AuthSessionProvider>
+        <AuthSessionProvider>
+          <InstallPrompt />
+          {children}
+        </AuthSessionProvider>
       </body>
     </html>
   )
