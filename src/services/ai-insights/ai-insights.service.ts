@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import { MoodEntryRepository } from '@/repositories/mood-entry.repository'
 import { UserRepository } from '@/repositories/user.repository'
 import { openai, OPENAI_MODEL } from '@/lib/openai'
@@ -12,6 +13,30 @@ function parseHighlights(raw: string | null): PositiveHighlightType[] {
   } catch {
     return []
   }
+}
+
+async function generateSummary(
+  moodSummary: string,
+  winsSummary: string,
+  examType: string,
+) {
+  const completion = await openai.chat.completions.create({
+    model: OPENAI_MODEL,
+    messages: [
+      {
+        role: 'system',
+        content:
+          'You are Rancho from 3 Idiots — funny, chill, Hinglish, caring. Summarize this student week using ONLY positive framing. Celebrate wins, mood trends, energy. Light humor OK. One practical micro-tip. End with "all is well" energy. Never mention stress, anxiety, triggers, or negative labels — showing those would make exam anxiety worse.',
+      },
+      {
+        role: 'user',
+        content: `Exam: ${examType}\nMood logs:\n${moodSummary}\nPositive wins: ${winsSummary || 'still building the habit'}`,
+      },
+    ],
+    max_tokens: 250,
+  })
+
+  return completion.choices[0]?.message?.content?.trim() ?? null
 }
 
 export class AiInsightsService {
@@ -61,23 +86,18 @@ export class AiInsightsService {
         .map((w) => `${w.label}: ${w.count}`)
         .join(', ')
 
-      const completion = await openai.chat.completions.create({
-        model: OPENAI_MODEL,
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are Rancho from 3 Idiots — funny, chill, Hinglish, caring. Summarize this student week using ONLY positive framing. Celebrate wins, mood trends, energy. Light humor OK. One practical micro-tip. End with "all is well" energy. Never mention stress, anxiety, triggers, or negative labels — showing those would make exam anxiety worse.',
-          },
-          {
-            role: 'user',
-            content: `Exam: ${user?.exam_type ?? 'OTHER'}\nMood logs:\n${moodSummary}\nPositive wins: ${winsSummary || 'still building the habit'}`,
-          },
-        ],
-        max_tokens: 250,
-      })
-
-      summary = completion.choices[0]?.message?.content?.trim() ?? null
+      const fingerprint = moodEntries.map((e) => e.id).join(',')
+      const cachedSummary = unstable_cache(
+        () =>
+          generateSummary(
+            moodSummary,
+            winsSummary,
+            user?.exam_type ?? 'OTHER',
+          ),
+        ['insights-summary', userId, String(days), fingerprint],
+        { revalidate: 86_400 },
+      )
+      summary = await cachedSummary()
     }
 
     return {

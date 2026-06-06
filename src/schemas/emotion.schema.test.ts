@@ -20,6 +20,14 @@ describe('CreateEmotionSnapshotSchema', () => {
     assert.equal(result.success, false)
   })
 
+  it('rejects oversized emotion maps', () => {
+    const emotions = Object.fromEntries(
+      Array.from({ length: 31 }, (_, index) => [`Emotion${index}`, 0.1]),
+    )
+    const result = CreateEmotionSnapshotSchema.safeParse({ emotions })
+    assert.equal(result.success, false)
+  })
+
   it('defaults source to rancho', () => {
     const result = CreateEmotionSnapshotSchema.safeParse({
       emotions: { Calmness: 0.4 },

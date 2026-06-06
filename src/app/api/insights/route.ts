@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { apiError, apiSuccess } from '@/lib/api-response'
 import { AiInsightsService } from '@/services/ai-insights/ai-insights.service'
+import { rateLimit } from '@/lib/rate-limit'
 import { z } from 'zod'
 
 const QuerySchema = z.object({
@@ -12,6 +13,9 @@ export async function GET(request: Request) {
   if (!session?.user?.id) {
     return apiError('Unauthorized', 401)
   }
+
+  const limited = rateLimit(`insights:${session.user.id}`, 20, 60 * 60 * 1000)
+  if (limited) return limited
 
   const { searchParams } = new URL(request.url)
   const result = QuerySchema.safeParse({ days: searchParams.get('days') ?? 7 })

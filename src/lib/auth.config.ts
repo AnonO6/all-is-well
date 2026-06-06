@@ -1,12 +1,12 @@
 import type { NextAuthConfig } from 'next-auth'
 import Google from 'next-auth/providers/google'
-import { env } from '@/lib/env'
+import { authEnv } from '@/lib/env.auth'
 
 export const authConfig = {
   providers: [
     Google({
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      clientId: authEnv.GOOGLE_CLIENT_ID,
+      clientSecret: authEnv.GOOGLE_CLIENT_SECRET,
     }),
   ],
   session: { strategy: 'jwt' },
@@ -21,7 +21,15 @@ export const authConfig = {
         pathname === '/' ||
         publicPaths.some((path) => path !== '/' && pathname.startsWith(path))
 
-      if (!auth && !isPublic) return false
+      if (!auth && !isPublic) {
+        if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth')) {
+          return Response.json(
+            { success: false, message: 'Unauthorized' },
+            { status: 401 },
+          )
+        }
+        return false
+      }
       if (auth && pathname === '/') {
         return Response.redirect(new URL('/dashboard', request.nextUrl.origin))
       }

@@ -1,3 +1,10 @@
+export const DEFAULT_JOURNAL_PROMPTS = [
+  'Aaj Rancho ko ek cheez bata — kya achha hua, chota ho toh bhi chalega?',
+  'Agar Virus tujhe ek line likhne ko bole, tu kya likhta? Honest.',
+  'Aaj kis moment mein thoda sa "all is well" feel hua?',
+  'Kal ke liye ek chhoti si wish likh — realistic, cute, possible.',
+] as const
+
 export const RANCHO_QUOTES = [
   'All is well, buddy. Even when Virus says otherwise.',
   'Virus ne aaj kya bola? Kuch bhi. Tu sun mat — tu jee.',

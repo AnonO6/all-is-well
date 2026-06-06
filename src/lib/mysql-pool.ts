@@ -1,6 +1,6 @@
 import { createPool, type PoolOptions } from 'mysql2'
 
-function parseDatabaseUrl(databaseUrl: string): PoolOptions {
+export function parseDatabaseUrl(databaseUrl: string): PoolOptions {
   const url = new URL(databaseUrl)
 
   return {

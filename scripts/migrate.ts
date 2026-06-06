@@ -1,25 +1,13 @@
 import { createPool } from 'mysql2/promise'
+import { parseDatabaseUrl } from '../src/lib/mysql-pool'
 
-function getPoolOptions() {
+async function migrate() {
   const databaseUrl = process.env.DATABASE_URL
   if (!databaseUrl) {
     throw new Error('DATABASE_URL is required')
   }
 
-  const url = new URL(databaseUrl)
-  return {
-    host: url.hostname,
-    port: Number(url.port) || 3306,
-    user: decodeURIComponent(url.username),
-    password: decodeURIComponent(url.password),
-    database: url.pathname.replace(/^\//, ''),
-    connectionLimit: 1,
-    ssl: { rejectUnauthorized: false },
-  }
-}
-
-async function migrate() {
-  const pool = createPool(getPoolOptions())
+  const pool = createPool({ ...parseDatabaseUrl(databaseUrl), connectionLimit: 1 })
   const connection = await pool.getConnection()
 
   try {

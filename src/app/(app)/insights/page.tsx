@@ -37,13 +37,23 @@ export default function InsightsPage() {
   const [insights, setInsights] = useState<InsightsData | null>(null)
   const [days, setDays] = useState<7 | 30>(7)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     setLoading(true)
+    setError('')
     fetch(`/api/insights?days=${days}`)
       .then((r) => r.json())
       .then((data) => {
-        if (data.success) setInsights(data.data)
+        if (data.success) {
+          setInsights(data.data)
+        } else {
+          setError(data.message ?? 'Could not load insights.')
+        }
+        setLoading(false)
+      })
+      .catch(() => {
+        setError('Could not load insights.')
         setLoading(false)
       })
   }, [days])
@@ -62,6 +72,10 @@ export default function InsightsPage() {
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <p className="text-sm text-brand-text/60">{copy.subtitle}</p>
       </header>
+
+      {error && (
+        <p className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>
+      )}
 
       <Card className="border-brand-teal/20 bg-brand-teal/5">
         <CardContent className="flex gap-3 p-4">

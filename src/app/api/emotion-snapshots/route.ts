@@ -4,6 +4,8 @@ import { apiError, apiSuccess } from '@/lib/api-response'
 import { CreateEmotionSnapshotSchema } from '@/schemas/emotion.schema'
 import { computeStressSignal } from '@/lib/hume-emotions'
 import { EmotionSnapshotRepository } from '@/repositories/emotion-snapshot.repository'
+import { rateLimit } from '@/lib/rate-limit'
+import { parseJsonBody } from '@/lib/request'
 
 export async function POST(request: Request) {
   const session = await auth()
@@ -11,9 +13,13 @@ export async function POST(request: Request) {
     return apiError('Unauthorized', 401)
   }
 
-  const body: unknown = await request.json()
-  const result = CreateEmotionSnapshotSchema.safeParse(body)
+  const limited = rateLimit(`emotion:${session.user.id}`, 60, 60 * 60 * 1000)
+  if (limited) return limited
 
+  const body = await parseJsonBody(request)
+  if (body instanceof Response) return body
+
+  const result = CreateEmotionSnapshotSchema.safeParse(body)
   if (!result.success) {
     return apiError('Validation failed', 400, result.error.flatten())
   }

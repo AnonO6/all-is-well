@@ -116,8 +116,8 @@ echo "==> Emotion snapshots require authentication"
 EMOTION_UNAUTH=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/api/emotion-snapshots" \
   -H "Content-Type: application/json" \
   -d '{"emotions":{"Joy":0.5}}')
-if [ "$EMOTION_UNAUTH" != "401" ] && [ "$EMOTION_UNAUTH" != "307" ] && [ "$EMOTION_UNAUTH" != "302" ]; then
-  echo "Expected emotion snapshot endpoint to require auth, got $EMOTION_UNAUTH"
+if [ "$EMOTION_UNAUTH" != "401" ]; then
+  echo "Expected emotion snapshot endpoint to return 401 without auth, got $EMOTION_UNAUTH"
   exit 1
 fi
 

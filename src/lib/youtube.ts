@@ -13,19 +13,20 @@ const MEDITATION_QUERIES = [
   'lofi study music focus',
 ]
 
-let keyIndex = 0
-
 function getYouTubeKeys() {
   return [env.YOUTUBE_API_KEY_ONE, env.YOUTUBE_API_KEY_TWO, env.YOUTUBE_API_KEY_THREE].filter(
     (key): key is string => Boolean(key),
   )
 }
 
-function getNextKey() {
+function pickApiKey(seed: string) {
   const keys = getYouTubeKeys()
-  const key = keys[keyIndex % keys.length]
-  keyIndex += 1
-  return key
+  if (keys.length === 0) return null
+  let hash = 0
+  for (const char of seed) {
+    hash = (hash + char.charCodeAt(0)) % keys.length
+  }
+  return keys[hash] ?? keys[0]
 }
 
 export async function searchWellnessVideos(category: 'meditation' | 'music' = 'meditation') {
@@ -34,7 +35,8 @@ export async function searchWellnessVideos(category: 'meditation' | 'music' = 'm
       ? 'lofi study beats calm focus'
       : MEDITATION_QUERIES[Math.floor(Math.random() * MEDITATION_QUERIES.length)]
 
-  const apiKey = getNextKey()
+  const dayBucket = new Date().toISOString().slice(0, 10)
+  const apiKey = pickApiKey(`${category}:${dayBucket}`)
   if (!apiKey) return []
 
   const params = new URLSearchParams({

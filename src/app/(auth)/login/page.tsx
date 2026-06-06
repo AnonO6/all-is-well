@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Sparkles } from 'lucide-react'
+import { safeCallbackUrl } from '@/lib/safe-url'
 
 function LoginForm() {
   const router = useRouter()
@@ -18,7 +19,7 @@ function LoginForm() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard'
+  const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'))
 
   const handleCredentials = async (e: React.FormEvent) => {
     e.preventDefault()

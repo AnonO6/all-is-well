@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { MoodPicker } from '@/components/mood/mood-picker'
 import { formatDate, getMoodEmoji } from '@/lib/utils'
-import { PAGE_COPY } from '@/lib/rancho-copy'
+import { DEFAULT_JOURNAL_PROMPTS, PAGE_COPY } from '@/lib/rancho-copy'
 import { Loader2 } from 'lucide-react'
 
 const copy = PAGE_COPY.journal
@@ -20,14 +20,21 @@ type JournalEntry = {
   created_at: string
 }
 
+function pickDefaultPrompt() {
+  return DEFAULT_JOURNAL_PROMPTS[
+    Math.floor(Math.random() * DEFAULT_JOURNAL_PROMPTS.length)
+  ]
+}
+
 export default function JournalPage() {
-  const [prompt, setPrompt] = useState('')
+  const [prompt, setPrompt] = useState(pickDefaultPrompt)
   const [response, setResponse] = useState('')
   const [moodBefore, setMoodBefore] = useState(5)
   const [moodAfter, setMoodAfter] = useState<number | null>(null)
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [loadingPrompt, setLoadingPrompt] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
   const [showMoodAfter, setShowMoodAfter] = useState(false)
 
   const loadEntries = async () => {
@@ -38,19 +45,25 @@ export default function JournalPage() {
 
   const generatePrompt = async () => {
     setLoadingPrompt(true)
+    setError('')
     const res = await fetch('/api/journal/prompt', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ moodScore: moodBefore }),
     })
     const data = await res.json()
-    if (data.success) setPrompt(data.data.prompt)
+    if (data.success) {
+      setPrompt(data.data.prompt)
+    } else {
+      setError(data.message ?? 'Could not fetch a new prompt right now.')
+    }
     setLoadingPrompt(false)
   }
 
   const saveEntry = async () => {
     if (!prompt || !response) return
     setSaving(true)
+    setError('')
     const res = await fetch('/api/journal', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -61,20 +74,21 @@ export default function JournalPage() {
         moodAfter: moodAfter ?? undefined,
       }),
     })
-    if (res.ok) {
+    const data = await res.json()
+    if (res.ok && data.success) {
       setResponse('')
       setMoodAfter(null)
       setShowMoodAfter(false)
+      setPrompt(pickDefaultPrompt())
       await loadEntries()
-      await generatePrompt()
+    } else {
+      setError(data.message ?? 'Could not save your entry.')
     }
     setSaving(false)
   }
 
   useEffect(() => {
     loadEntries()
-    generatePrompt()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
@@ -83,6 +97,10 @@ export default function JournalPage() {
         <h1 className="text-2xl font-bold">{copy.title}</h1>
         <p className="text-sm text-brand-text/60">{copy.subtitle}</p>
       </header>
+
+      {error && (
+        <p className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>
+      )}
 
       <Card>
         <CardHeader>

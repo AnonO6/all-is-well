@@ -3,6 +3,7 @@ import { apiError, apiSuccess } from '@/lib/api-response'
 import { CreateMoodEntrySchema } from '@/schemas/mood.schema'
 import { MoodService } from '@/services/mood/mood.service'
 import { MoodEntryRepository } from '@/repositories/mood-entry.repository'
+import { parseJsonBody } from '@/lib/request'
 
 export async function POST(request: Request) {
   const session = await auth()
@@ -10,9 +11,10 @@ export async function POST(request: Request) {
     return apiError('Unauthorized', 401)
   }
 
-  const body: unknown = await request.json()
-  const result = CreateMoodEntrySchema.safeParse(body)
+  const body = await parseJsonBody(request)
+  if (body instanceof Response) return body
 
+  const result = CreateMoodEntrySchema.safeParse(body)
   if (!result.success) {
     return apiError('Validation failed', 400, result.error.flatten())
   }

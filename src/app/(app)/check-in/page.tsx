@@ -21,10 +21,12 @@ export default function CheckInPage() {
   const [positiveHighlights, setPositiveHighlights] = useState<PositiveHighlightType[]>([])
   const [note, setNote] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const [done, setDone] = useState(false)
 
   const submit = async () => {
     setLoading(true)
+    setError('')
     const response = await fetch('/api/check-ins', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -39,7 +41,10 @@ export default function CheckInPage() {
     if (response.ok) {
       setDone(true)
       setTimeout(() => router.push('/dashboard'), 1500)
+      return
     }
+    const data = await response.json().catch(() => null)
+    setError(data?.message ?? 'Check-in failed. Try again, buddy.')
   }
 
   if (done) {
@@ -139,6 +144,10 @@ export default function CheckInPage() {
             />
           </CardContent>
         </Card>
+      )}
+
+      {error && (
+        <p className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>
       )}
 
       <div className="flex gap-3">

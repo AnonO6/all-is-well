@@ -71,7 +71,6 @@ export default async function DashboardPage() {
               alt={heroImage.alt}
               fill
               className="object-cover"
-              priority
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
             <p className="absolute bottom-3 left-4 text-sm text-white/80">
